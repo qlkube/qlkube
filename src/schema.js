@@ -22,38 +22,27 @@ async function oasToGraphQlSchema(oas, kubeApiUrl, token) {
 // adds an 'all' type to the schema
 function decorateSchema(baseSchema) {
     //TODO: extract type names to env vars
-    const allSchemas = {
-        allServicesSchema: baseSchema.getQueryType().getFields()["listCoreV1ServiceForAllNamespaces"],
-        allServicesInNamespaceSchema: baseSchema.getQueryType().getFields()["ioK8sApiCoreV1ServiceList"],
-
-        allDeploysSchema: baseSchema.getQueryType().getFields()["ioK8sApiAppsV1DeploymentList"],
-        allDeploysInNamespaceSchema: baseSchema.getQueryType().getFields()["listAppsV1NamespacedDeployment"],
-
-        allPodsSchema: baseSchema.getQueryType().getFields()["listCoreV1PodForAllNamespaces"],
-        allPodsInNamespaceSchema: baseSchema.getQueryType().getFields()["ioK8sApiCoreV1PodList"],
-
-        allDaemonSetsSchema: baseSchema.getQueryType().getFields()["ioK8sApiAppsV1DaemonSetList"],
-        allDaemonSetsInNamespaceSchema: baseSchema.getQueryType().getFields()["listAppsV1NamespacedDaemonSet"],
-
-        allReplicaSetsSchema: baseSchema.getQueryType().getFields()["listAppsV1ReplicaSetForAllNamespaces"],
-        allReplicaSetsInNamespaceSchema: baseSchema.getQueryType().getFields()["ioK8sApiAppsV1ReplicaSetList"],
-
-        allStatefulSetsSchema: baseSchema.getQueryType().getFields()["listAppsV1StatefulSetForAllNamespaces"],
-        allStatefulSetsInNamespaceSchema: baseSchema.getQueryType().getFields()["ioK8sApiAppsV1StatefulSetList"],
-
-        allJobsSchema: baseSchema.getQueryType().getFields()["ioK8sApiBatchV1JobList"],
-        allJobsInNamespaceSchema: baseSchema.getQueryType().getFields()["listBatchV1NamespacedJob"],
-
-        allCronJobsSchema: baseSchema.getQueryType().getFields()["ioK8sApiBatchV1beta1CronJobList"],
-        allCronJobsInNamespaceSchema: baseSchema.getQueryType().getFields()["listBatchV1beta1NamespacedCronJob"],
-    };
+    const allType = new GraphQLObjectType({
+        name: 'all',
+        description: 'All kube resources.',
+        fields: {
+            services: createType({name: "services", allNamespaceQueryName: "listCoreV1ServiceForAllNamespaces", namespacedQueryName: "ioK8sApiCoreV1ServiceList", baseSchema}),
+            deployments: createType({name: "deployments", allNamespaceQueryName: "ioK8sApiAppsV1DeploymentList", namespacedQueryName: "listAppsV1NamespacedDeployment", baseSchema}),
+            pods: createType({name: "pods", allNamespaceQueryName: "listCoreV1PodForAllNamespaces", namespacedQueryName: "ioK8sApiCoreV1PodList", baseSchema}),
+            daemonSets: createType({name: "daemonSets", allNamespaceQueryName: "ioK8sApiAppsV1DaemonSetList", namespacedQueryName: "listAppsV1NamespacedDaemonSet", baseSchema}),
+            replicaSets: createType({name: "replicaSets", allNamespaceQueryName: "listAppsV1ReplicaSetForAllNamespaces", namespacedQueryName: "ioK8sApiAppsV1ReplicaSetList", baseSchema}),
+            statefulSets: createType({name: "statefulSets", allNamespaceQueryName: "listAppsV1StatefulSetForAllNamespaces", namespacedQueryName: "ioK8sApiAppsV1StatefulSetList", baseSchema}),
+            jobs: createType({name: "jobs", allNamespaceQueryName: "ioK8sApiBatchV1JobList", namespacedQueryName: "listBatchV1NamespacedJob", baseSchema}),
+            cronJobs: createType({name: "cronJobs", allNamespaceQueryName: "ioK8sApiBatchV1beta1CronJobList", namespacedQueryName: "listBatchV1beta1NamespacedCronJob", baseSchema})
+        }
+    });
 
     const schema = new GraphQLSchema({
         query: new GraphQLObjectType({
             name: 'query',
             fields: {
                 all: {
-                    type: allType(allSchemas),
+                    type: allType,
                     args: {
                         fieldSelector: {type: GraphQLString},
                         includeUninitialized: {type: GraphQLBoolean},
@@ -72,101 +61,19 @@ function decorateSchema(baseSchema) {
     return mergeSchemas({schemas});
 }
 
-const allType = ({
-                     allServicesSchema,
-                     allServicesInNamespaceSchema,
-                     allDeploysSchema,
-                     allDeploysInNamespaceSchema,
-                     allPodsSchema,
-                     allPodsInNamespaceSchema,
-                     allDaemonSetsSchema,
-                     allDaemonSetsInNamespaceSchema,
-                     allReplicaSetsSchema,
-                     allReplicaSetsInNamespaceSchema,
-                     allStatefulSetsSchema,
-                     allStatefulSetsInNamespaceSchema,
-                     allJobsSchema,
-                     allJobsInNamespaceSchema,
-                     allCronJobsSchema,
-                     allCronJobsInNamespaceSchema
-                 }) => new GraphQLObjectType({
-    name: 'all',
-    description: 'All kube resources.',
-    fields: {
-        services: {
-            type: allServicesSchema.type,
-            description: 'All services in all namespaces.',
-            resolve(parent, args, context, info) {
-                return parent.namespace ?
-                    allServicesInNamespaceSchema.resolve(parent, parent, context, info) :
-                    allServicesSchema.resolve(parent, parent, context, info)
-            }
-        },
-        deployments: {
-            type: allDeploysSchema.type,
-            description: 'All deployments in all namespaces.',
-            resolve(parent, args, context, info) {
-                return parent.namespace ?
-                    allDeploysInNamespaceSchema.resolve(parent, parent, context, info) :
-                    allDeploysSchema.resolve(parent, parent, context, info)
-            }
-        },
-        pods: {
-            type: allPodsSchema.type,
-            description: 'All pods in all namespaces.',
-            resolve(parent, args, context, info) {
-                return parent.namespace ?
-                    allPodsInNamespaceSchema.resolve(parent, parent, context, info) :
-                    allPodsSchema.resolve(parent, parent, context, info)
-            }
-        },
-        daemonSets: {
-            type: allDaemonSetsSchema.type,
-            description: 'All daemonsets in all namespaces.',
-            resolve(parent, args, context, info) {
-                return parent.namespace ?
-                    allDaemonSetsInNamespaceSchema.resolve(parent, parent, context, info) :
-                    allDaemonSetsSchema.resolve(parent, parent, context, info)
-            }
-        },
-        replicaSets: {
-            type: allReplicaSetsSchema.type,
-            description: 'All replicasets in all namespaces.',
-            resolve(parent, args, context, info) {
-                return parent.namespace ?
-                    allReplicaSetsInNamespaceSchema.resolve(parent, parent, context, info) :
-                    allReplicaSetsSchema.resolve(parent, parent, context, info)
-            }
-        },
-        statefulSets: {
-            type: allStatefulSetsSchema.type,
-            description: 'All statefulsets in all namespaces.',
-            resolve(parent, args, context, info) {
-                return parent.namespace ?
-                    allStatefulSetsInNamespaceSchema.resolve(parent, parent, context, info) :
-                    allStatefulSetsSchema.resolve(parent, parent, context, info)
-            }
-        },
-        jobs: {
-            type: allJobsSchema.type,
-            description: 'All jobs in all namespaces.',
-            resolve(parent, args, context, info) {
-                return parent.namespace ?
-                    allJobsInNamespaceSchema.resolve(parent, parent, context, info) :
-                    allJobsSchema.resolve(parent, parent, context, info)
-            }
-        },
-        cronJobs: {
-            type: allCronJobsSchema.type,
-            description: 'All cronjobs in all namespaces.',
-            resolve(parent, args, context, info) {
-                return parent.namespace ?
-                    allCronJobsInNamespaceSchema.resolve(parent, parent, context, info) :
-                    allCronJobsSchema.resolve(parent, parent, context, info)
-            }
-        },
-    },
-});
+function createType({name, allNamespaceQueryName, namespacedQueryName, baseSchema}) {
+    const allNamespacesQueryType = baseSchema.getQueryType().getFields()[allNamespaceQueryName];
+    const namespacedQueryType = baseSchema.getQueryType().getFields()[namespacedQueryName];
+    return {
+        type: allNamespacesQueryType.type,
+        description: `All ${name} in all namespaces.`,
+        resolve(parent, args, context, info) {
+            return parent.namespace ?
+                allNamespacesQueryType.resolve(parent, parent, context, info) : // 'parent' in this case is just the args passed to the 'all' parent, which is what we want to use as args here
+                namespacedQueryType.resolve(parent, parent, context, info);
+        }
+    }
+}
 
 // TODO: all by namespace
 // TODO: all by label

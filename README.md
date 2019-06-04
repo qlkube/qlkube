@@ -108,6 +108,37 @@ query getAllPodsInDefaultNamespace {
   }
 }
 ```
+
+Output:
+
+```json
+{
+  "data": {
+    "all": {
+      "pods": {
+        "items": [
+          {
+            "metadata": {
+              "name": "alpha-7c766f4fc7-2bh8m",
+              "namespace": "default",
+              "creationTimestamp": "2019-06-03T15:07:17Z",
+              "labels": {
+                "app": "alpha",
+                "appKubernetesIoManagedBy": "skaffold-v0.29.0",
+                "appId": "github.expedia.biz_hotels_alpha",
+                "podTemplateHash": "7c766f4fc7",
+                "skaffoldDevBuilder": "local",
+                "skaffoldDevCleanup": "true",
+                "skaffoldDevDeployer": "kubectl",
+                "skaffoldDevDockerApiVersion": "1.39",
+                "skaffoldDevTagPolicy": "git-commit",
+                "skaffoldDevTail": "true",
+                "version": "v1"
+              }
+            }
+          },
+...etc          
+```
 </details> 
 
 
@@ -179,6 +210,41 @@ query allResourcesOfApp {
   }
 }
 ```
+
+Output:
+
+```json
+{
+  "data": {
+    "all": {
+      "services": {
+        "items": [
+          {
+            "metadata": {
+              "name": "alpha"
+            }
+          }
+        ]
+      },
+      "deployments": {
+        "items": [
+          {
+            "metadata": {
+              "name": "alpha"
+            }
+          }
+        ]
+      },
+      "pods": {
+        "items": [
+          {
+            "metadata": {
+              "name": "alpha-7c766f4fc7-2bh8m"
+            }
+          },
+...etc          
+```
+
 </details> 
 
 ## Example Mutations
@@ -209,6 +275,21 @@ mutation createNamespace {
   }
 }
 ```
+
+Output:
+
+```json
+{
+  "data": {
+    "createCoreV1Namespace": {
+      "metadata": {
+        "creationTimestamp": "2019-06-03T22:37:02Z"
+      }
+    }
+  }
+}
+```
+
 </details> 
 
 

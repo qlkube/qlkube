@@ -33,7 +33,8 @@ function decorateSchema(baseSchema) {
             replicaSets: createType({name: "replicaSets", allNamespaceQueryName: "listAppsV1ReplicaSetForAllNamespaces", namespacedQueryName: "ioK8sApiAppsV1ReplicaSetList", baseSchema}),
             statefulSets: createType({name: "statefulSets", allNamespaceQueryName: "listAppsV1StatefulSetForAllNamespaces", namespacedQueryName: "ioK8sApiAppsV1StatefulSetList", baseSchema}),
             jobs: createType({name: "jobs", allNamespaceQueryName: "ioK8sApiBatchV1JobList", namespacedQueryName: "listBatchV1NamespacedJob", baseSchema}),
-            cronJobs: createType({name: "cronJobs", allNamespaceQueryName: "ioK8sApiBatchV1beta1CronJobList", namespacedQueryName: "listBatchV1beta1NamespacedCronJob", baseSchema})
+            cronJobs: createType({name: "cronJobs", allNamespaceQueryName: "ioK8sApiBatchV1beta1CronJobList", namespacedQueryName: "listBatchV1beta1NamespacedCronJob", baseSchema}),
+            namespaces: createNamespaceType({name: "namespaces", allNamespaceQueryName: "ioK8sApiCoreV1NamespaceList", baseSchema}),
         }
     });
 
@@ -71,6 +72,26 @@ function createType({name, allNamespaceQueryName, namespacedQueryName, baseSchem
             return parent.namespace ?
                 namespacedQueryType.resolve(parent, parent, context, info) : // 'parent' in this case is just the args passed to the 'all' parent, which is what we want to use as args here
                 allNamespaceQueryType.resolve(parent, parent, context, info);
+        }
+    }
+}
+
+// Namespace has to be handled slightly differently to pods, deployments etc. as the singular 'namespaced' query type (`ioK8sApiCoreV1Namespace`)
+// returns a different (singular) type rather than a `IoK8sApiCoreV1NamespaceList` - we must therefore instead manually filter
+// the list to ensure parity.
+function createNamespaceType({allNamespaceQueryName, baseSchema}) {
+    const allNamespaceQueryType = baseSchema.getQueryType().getFields()[allNamespaceQueryName];
+    return {
+        type: allNamespaceQueryType.type,
+        description: `All namespaces.`,
+        async resolve(parent, args, context, info) {
+            const namespacesProm = allNamespaceQueryType.resolve(parent, parent, context, info);
+            if (parent.namespace) { // if 'namespace' argument provided to `all` query, then filter items in namespace list
+                const namespaces = await namespacesProm;
+                namespaces.items = namespaces.items.filter(ns => ns.metadata.name === parent.namespace);
+                return namespaces
+            }
+            return namespacesProm
         }
     }
 }

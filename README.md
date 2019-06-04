@@ -4,8 +4,8 @@ qlkube is a graphql api for kubernetes, allowing you to interact with all the fe
 
 qlkube's graphql schema is dynamically built from the openapi/swagger api specification exposed by the Kubernetes cluster it 
 is running in - qlkube should therefore:
-    - expose *all* the types and operations from the Kubernetes rest api in its grapqhl api
-    - be consistent with the exact Kubernetes api version of your cluster and kept up to date if and when this changes
+- expose *all* the types and operations from the Kubernetes rest api in its grapqhl api
+- be consistent with the exact Kubernetes api version of your cluster and kept up to date if and when this changes
 
 In addition to the directly mapped operations from the openapi spec, qlkube provides an 'all' query type that gives a more
 natural 'kubectl' influenced interface into the api.

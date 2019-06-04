@@ -45,7 +45,6 @@ function decorateSchema(baseSchema) {
                     type: allType,
                     args: {
                         fieldSelector: {type: GraphQLString},
-                        includeUninitialized: {type: GraphQLBoolean},
                         namespace: {type: GraphQLString},
                         labelSelector: {type: GraphQLString}
                     },
@@ -61,16 +60,17 @@ function decorateSchema(baseSchema) {
     return mergeSchemas({schemas});
 }
 
+// creates a type that lifts the return type and resolve methods from the existing generated schema methods
 function createType({name, allNamespaceQueryName, namespacedQueryName, baseSchema}) {
-    const allNamespacesQueryType = baseSchema.getQueryType().getFields()[allNamespaceQueryName];
+    const allNamespaceQueryType = baseSchema.getQueryType().getFields()[allNamespaceQueryName];
     const namespacedQueryType = baseSchema.getQueryType().getFields()[namespacedQueryName];
     return {
-        type: allNamespacesQueryType.type,
+        type: allNamespaceQueryType.type, //return type is the same for both namespaced and all-namespace variants.
         description: `All ${name} in all namespaces.`,
         resolve(parent, args, context, info) {
             return parent.namespace ?
-                allNamespacesQueryType.resolve(parent, parent, context, info) : // 'parent' in this case is just the args passed to the 'all' parent, which is what we want to use as args here
-                namespacedQueryType.resolve(parent, parent, context, info);
+                namespacedQueryType.resolve(parent, parent, context, info) : // 'parent' in this case is just the args passed to the 'all' parent, which is what we want to use as args here
+                allNamespaceQueryType.resolve(parent, parent, context, info);
         }
     }
 }

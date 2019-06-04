@@ -37,6 +37,53 @@ query getAllPodsInAllNamespaces {
   }
 }
 ```
+
+Output:
+
+```json
+{
+  "data": {
+    "all": {
+      "pods": {
+        "items": [
+          {
+            "metadata": {
+              "name": "alpha-7c766f4fc7-2bh8m",
+              "namespace": "default"
+            }
+          },
+          {
+            "metadata": {
+              "name": "alpha-7c766f4fc7-hx8ml",
+              "namespace": "default"
+            }
+          },
+          {
+            "metadata": {
+              "name": "alpha-7c766f4fc7-ztpph",
+              "namespace": "default"
+            }
+          },
+          {
+            "metadata": {
+              "name": "beta-v1-597679f796-k5gn4",
+              "namespace": "default"
+            }
+          },
+          {
+            "metadata": {
+              "name": "beta-v1-597679f796-x7hsl",
+              "namespace": "default"
+            }
+          },
+          {
+            "metadata": {
+              "name": "gamma-79bc488b5b-srmxm",
+              "namespace": "default"
+            }
+          },
+...etc
+```
 </details> 
 
 <details>

@@ -207,7 +207,14 @@ query allResourcesOfApp {
           name
         }
       }
-    }  
+    } 
+    namespaces {
+      items {
+        metadata {
+          name
+        }
+      }
+    }
   }
 }
 ```

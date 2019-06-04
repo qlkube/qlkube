@@ -21,7 +21,7 @@ named exactly as the 'operationId' in the openapiSpec, they can therefore seem q
  <summary>Get all pods in all namespaces</summary>
  
  This query returns the names and namespaces of all the pods in the cluster.
- (here we use the more friendly 'all' type - you can perform a similar query using 'listCoreV1PodForAllNamespaces')
+ (here we use the more friendly 'all' type - you can perform a similar query using `listCoreV1PodForAllNamespaces`)
  
 ```graphql
 query getAllPodsInAllNamespaces {
@@ -43,7 +43,7 @@ query getAllPodsInAllNamespaces {
  <summary>Get all pods in a specific namespace</summary>
  
  This query returns the names, namespaces, creation times and labels of all the pods in the 'default' namespace
- (here we use the more friendly 'all' type - you can perform a similar query using 'ioK8sApiCoreV1PodList')
+ (here we use the more friendly 'all' type - you can perform a similar query using `ioK8sApiCoreV1PodList`)
  
 ```graphql
 query getAllPodsInDefaultNamespace {
@@ -67,7 +67,7 @@ query getAllPodsInDefaultNamespace {
 <details>
  <summary>Get all kubernetes resources with a specific label</summary>
 
-This query gets all kubernetes resources that are labelled with label 'app=alpha' 
+This query gets the names of all kubernetes resources (services, deployments, pods etc) that are labelled with label 'app=alpha' 
 (roughly equivalent to `kubectl get all -l app=alpha`)
 
 ```graphql
@@ -134,4 +134,37 @@ query allResourcesOfApp {
 ```
 </details> 
 
+## Running
 
+### In Cluster
+
+qlkube is designed to be run inside the kubernetes cluster. 
+The included [skaffold](skaffold.yaml) file should get you started (note that in production you may want to restrict 
+the permissive RBAC settings in `deployments/deployment.yaml`).
+N.B. you need [skaffold](https://github.com/GoogleContainerTools/skaffold) installed.
+
+```
+skaffold dev
+kubectl port-forward svc/qlkube 8080:80
+```
+
+Navigate to http://localhost:8080/ in your browser - this will launch the GraphQL Playground which you can use to interact
+with kubernetes with using qlkube.
+
+### Out of cluster (dev mode)
+
+For playing around locally you can run qlkube outside of the cluster. To do this you must first proxy the Kubernetes
+api server to http://localhost:8001:
+
+```
+kubectl proxy
+```
+
+You can then run qlkube locally, which will connect to the proxied Kubernetes api:
+
+```
+npm run local
+```
+
+Navigate to http://localhost:8080/ in your browser - this will launch the GraphQL Playground which you can use to interact
+with kubernetes with using qlkube.

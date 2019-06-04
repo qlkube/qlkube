@@ -21,7 +21,7 @@ async function oasToGraphQlSchema(oas, kubeApiUrl, token) {
 
 // adds an 'all' type to the schema
 function decorateSchema(baseSchema) {
-    //TODO: extract type names to env vars
+    //TODO: extract query type names to env vars
     const allType = new GraphQLObjectType({
         name: 'all',
         description: 'All kube resources.',
@@ -77,4 +77,5 @@ function createType({name, allNamespaceQueryName, namespacedQueryName, baseSchem
 
 // TODO: all by namespace
 // TODO: all by label
+// TODO: serve raw schema
 

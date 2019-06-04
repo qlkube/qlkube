@@ -134,6 +134,37 @@ query allResourcesOfApp {
 ```
 </details> 
 
+## Example Mutations
+
+<details>
+ <summary>Create namespace</summary>
+ 
+This mutation creates a new 'bar' namespace. The input json is the escaped version of the following:
+ 
+```json
+{
+    "apiVersion": "v1",
+    "kind": "Namespace",
+    "metadata": {
+        "name": "bar"
+    }
+}
+```
+
+We output the creation timestamp for the new namesapce.
+  
+```graphql
+mutation createNamespace {
+  createCoreV1Namespace(input: "{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"bar\"}}") {
+    metadata {
+      creationTimestamp
+    }
+  }
+}
+```
+</details> 
+
+
 ## Running
 
 ### In Cluster

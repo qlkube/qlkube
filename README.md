@@ -305,11 +305,23 @@ Output:
 
 ## Running
 
-### In Cluster
+### Quickstart
 
 qlkube is designed to be run inside the kubernetes cluster. 
-The included [skaffold](skaffold.yaml) file should get you started (note that in production you may want to restrict 
-the permissive RBAC settings in `deployments/deployment.yaml`).
+The included [quickstart.yaml](deployments/quickstart.yaml) manifest should get you started 
+
+```
+kubectl apply -f deployments/quickstart.yaml 
+kubectl port-forward svc/qlkube 8080:80
+```
+
+Navigate to http://localhost:8080/ in your browser - this will launch the GraphQL Playground which you can use to interact
+with the kubernetes api.
+
+### Skaffold
+ 
+The included [skaffold](skaffold.yaml) can be used to build and deploy from source 
+(note that in production you may want to restrict the permissive RBAC settings in `deployments/deployment.yaml`).
 N.B. you need [skaffold](https://github.com/GoogleContainerTools/skaffold) installed.
 
 ```
@@ -318,7 +330,7 @@ kubectl port-forward svc/qlkube 8080:80
 ```
 
 Navigate to http://localhost:8080/ in your browser - this will launch the GraphQL Playground which you can use to interact
-with kubernetes with using qlkube.
+with the kubernetes api.
 
 ### Out of cluster (dev mode)
 
@@ -336,4 +348,4 @@ npm run local
 ```
 
 Navigate to http://localhost:8080/ in your browser - this will launch the GraphQL Playground which you can use to interact
-with kubernetes with using qlkube.
+with the kubernetes api.

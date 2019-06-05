@@ -7,3 +7,13 @@ deploy:
   kubectl:
     manifests:
     - deployments/deployment.yaml
+profiles:
+  - name: travis-ci
+    build:
+      local:
+        push: false
+  - name: travis-release
+    build:
+      tagPolicy:
+        envTemplate:
+          template: '{{.IMAGE_NAME}}:{{.TRAVIS_TAG}}'

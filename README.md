@@ -10,6 +10,8 @@ is running in - qlkube should therefore:
 In addition to the directly mapped operations from the openapi spec, qlkube provides an 'all' query type that gives a more
 natural 'kubectl' influenced interface into the api.
 
+qlkube ships with the Apollo GraphQL Playground, so you can play around with the api straight away.
+
 ![Demo](docs/qlkube.gif)
 
 ## Example Queries

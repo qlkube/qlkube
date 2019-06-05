@@ -308,7 +308,7 @@ Output:
 ### Quickstart
 
 qlkube is designed to be run inside the kubernetes cluster. 
-The included [quickstart.yaml](deployments/quickstart.yaml) manifest should get you started 
+The included [quickstart.yaml](deployments/quickstart.yaml) manifest should get you started: 
 
 ```
 kubectl apply -f deployments/quickstart.yaml 
@@ -320,9 +320,9 @@ with the kubernetes api.
 
 ### Skaffold
  
-The included [skaffold](skaffold.yaml) can be used to build and deploy from source 
+The included [skaffold.yaml](skaffold.yaml) can be used to build and deploy from source 
 (note that in production you may want to restrict the permissive RBAC settings in `deployments/deployment.yaml`).
-N.B. you need [skaffold](https://github.com/GoogleContainerTools/skaffold) installed.
+N.B. you need [skaffold](https://github.com/GoogleContainerTools/skaffold) installed!
 
 ```
 skaffold dev
@@ -334,7 +334,7 @@ with the kubernetes api.
 
 ### Out of cluster (dev mode)
 
-For playing around locally you can run qlkube outside of the cluster. To do this you must first proxy the Kubernetes
+For playing around locally you can run qlkube from source outside of the cluster. To do this you must first proxy the Kubernetes
 api server to http://localhost:8001:
 
 ```

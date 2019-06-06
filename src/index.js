@@ -1,5 +1,7 @@
 const fs = require("fs").promises;
-const {ApolloServer} = require('apollo-server');
+const express = require('express');
+const { ApolloServer } = require('apollo-server-express');
+const compression = require('compression');
 const {createSchema} = require('./schema');
 const getOpenApiSpec = require('./oas');
 const logger = require('pino')({useLevelLabels: true});
@@ -16,8 +18,15 @@ async function main() {
     const schema = await createSchema(oas, kubeApiUrl, token)
 
     const server = new ApolloServer({schema});
-    const {url} = await server.listen({port: 8080});
-    logger.info({url}, '🚀 Server ready')
+    const app = express();
+    app.use(compression());
+    server.applyMiddleware({
+        app,
+        path: '/'
+    });
+    app.listen({ port: 8080 }, () =>
+        logger.info({url: `http://localhost:8080${server.graphqlPath}`}, '🚀 Server ready')
+    );
 }
 
 

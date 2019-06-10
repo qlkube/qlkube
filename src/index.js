@@ -4,6 +4,7 @@ const { ApolloServer } = require('apollo-server-express');
 const compression = require('compression');
 const {createSchema} = require('./schema');
 const getOpenApiSpec = require('./oas');
+const { printSchema } = require('graphql');
 const logger = require('pino')({useLevelLabels: true});
 
 main().catch(e => logger.error({error: e.stack}, "failed to start qlkube server"));
@@ -15,11 +16,15 @@ async function main() {
     const token = inCluster ? await fs.readFile('/var/run/secrets/kubernetes.io/serviceaccount/token', 'utf8') : '';
 
     const oas = await getOpenApiSpec(kubeApiUrl, token);
-    const schema = await createSchema(oas, kubeApiUrl, token)
+    const schema = await createSchema(oas, kubeApiUrl, token);
 
     const server = new ApolloServer({schema});
     const app = express();
     app.use(compression());
+    app.get('/schema', (req, res) => {
+        res.setHeader('content-type', 'text/plain');
+        res.send(printSchema(schema))
+    });
     server.applyMiddleware({
         app,
         path: '/'

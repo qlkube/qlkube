@@ -302,7 +302,6 @@ Output:
 
 </details> 
 
-
 ## Running
 
 ### Quickstart
@@ -349,3 +348,7 @@ npm run local
 
 Navigate to http://localhost:8080/ in your browser - this will launch the GraphQL Playground which you can use to interact
 with the kubernetes api.
+
+## Schema
+
+The generated graphql schema is served at /schema

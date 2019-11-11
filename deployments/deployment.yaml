@@ -32,6 +32,18 @@ spec:
       containers:
         - name: qlkube
           image: qlkube/qlkube
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
 ---
 apiVersion: v1
 kind: ServiceAccount

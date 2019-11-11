@@ -17,7 +17,7 @@ module.exports = async function getOpenApiSpec(url, token) {
             logger.info({url, path: p}, "successfully retrieved open api spec from this path")
             return r.body
         }).catch(err => {
-            logger.info({cause: err.message, url, path: p}, "failed to retrieve open api spec from this path")
+            logger.info({cause: err.message, url, path: p}, "failed to retrieve open api spec from this path - will try another")
             throw err
         });
         gotProms.push(gotProm)

@@ -35,6 +35,7 @@ function decorateSchema(baseSchema) {
             jobs: createType({name: "jobs", allNamespaceQueryName: "ioK8sApiBatchV1JobList", namespacedQueryName: "listBatchV1NamespacedJob", baseSchema}),
             cronJobs: createType({name: "cronJobs", allNamespaceQueryName: "ioK8sApiBatchV1beta1CronJobList", namespacedQueryName: "listBatchV1beta1NamespacedCronJob", baseSchema}),
             namespaces: createNamespaceType({name: "namespaces", allNamespaceQueryName: "ioK8sApiCoreV1NamespaceList", baseSchema}),
+            configmaps: createType({name: "configmaps", allNamespaceQueryName: "ioK8sApiCoreV1ConfigMapList", namespacedQueryName: "listCoreV1NamespacedConfigMap", baseSchema}),
         }
     });
 

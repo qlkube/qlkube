@@ -9,6 +9,7 @@ exports.createSchema = async (oas, kubeApiUrl, token) => {
 
 async function oasToGraphQlSchema(oas, kubeApiUrl, token) {
     if (token) {
+        console.log("Using auth with predefined Kubernetes token");
         const {schema} = await createGraphQLSchema(oas, {
             baseUrl: kubeApiUrl,
             viewer: false,
@@ -20,7 +21,7 @@ async function oasToGraphQlSchema(oas, kubeApiUrl, token) {
         return schema;
     }
     else {
-        console.log("Using auth scope");
+        console.log("Using JWT auth");
         const {schema} = await createGraphQLSchema(oas, {
             baseUrl: kubeApiUrl,
             viewer: false,

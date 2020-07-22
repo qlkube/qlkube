@@ -22,7 +22,7 @@ async function main() {
     let schema = null;
     let server = null;
     if (useJWTauth) {
-        logger.info("Generating GraphQL schema using user JWT from context...")
+        logger.info("Generating GraphQL schema to use user JWT from context...")
         schema = await createSchema(oas, kubeApiUrl);
         server = new ApolloServer({
             schema,
@@ -36,7 +36,7 @@ async function main() {
             }
         });
     } else {
-        logger.warn("Generating GraphQL schema using default serviceaccount token...")
+        logger.warn("Generating GraphQL schema to use default serviceaccount token...")
         schema = await createSchema(oas, kubeApiUrl, token);
         server = new ApolloServer({schema});
     } 

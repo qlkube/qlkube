@@ -1,9 +1,10 @@
 const fs = require("fs").promises;
 const express = require('express');
+const { ApolloServer } = require('apollo-server-express');
 const compression = require('compression');
 const {createSchema} = require('./schema');
 const getOpenApiSpec = require('./oas');
-const { graphqlHTTP } = require('express-graphql');
+const { printSchema } = require('graphql');
 const logger = require('pino')({useLevelLabels: true});
 
 main().catch(e => logger.error({error: e.stack}, "failed to start qlkube server"));
@@ -14,34 +15,47 @@ async function main() {
     const kubeApiUrl = inCluster ? 'https://kubernetes.default.svc' : process.env.KUBERNETES_HOST;
     const token = inCluster ? await fs.readFile('/var/run/secrets/kubernetes.io/serviceaccount/token', 'utf8') : process.env.KUBE_SCHEMA_TOKEN;
 
+
     const oas = await getOpenApiSpec(kubeApiUrl, token);
 
-    useJWTauth = true;
+    useJWTauth = process.env.USE_JWT_AUTH !== 'false';
     let schema = null;
+    let server = null;
     if (useJWTauth) {
+        logger.info("Generating GraphQL schema using user JWT from context...")
         schema = await createSchema(oas, kubeApiUrl);
+        server = new ApolloServer({
+            schema,
+            context: ({ req }) => {
+                if(req.headers.authorization.length > 0) {
+                    const strs = req.headers.authorization.split(' ');
+                    var user = {};
+                    user.token = strs[1];
+                    return user;
+                }
+            }
+        });
     } else {
+        logger.warn("Generating GraphQL schema using default serviceaccount token...")
         schema = await createSchema(oas, kubeApiUrl, token);
+        server = new ApolloServer({schema});
     } 
 
-    // server schema:
-    const app = express()
-    app.use(
-        '/graphql',
-        graphqlHTTP({
-        schema,
-        graphiql: true
-        })
-    )
-
-    app.use(compression({ filter: shouldCompress }))
-    function shouldCompress (req, res) {
-        if (req.headers['x-no-compression']) {
-            // don't compress responses with this request header
-            return false
-        }
-        // fallback to standard filter function
-        return compression.filter(req, res)
-    }
-    app.listen(49020)
+    const app = express();
+    app.use(compression());
+    app.get('/schema', (req, res) => {
+        res.setHeader('content-type', 'text/plain');
+        res.send(printSchema(schema))
+    });
+    app.get('/health', (req, res) => {
+        res.setHeader('content-type', 'application/json');
+        res.json({ healthy: true })
+    });
+    server.applyMiddleware({
+        app,
+        path: '/'
+    });
+    app.listen({ port: 49020 }, () =>
+        logger.info({url: `http://localhost:49020${server.graphqlPath}`}, '🚀 Server ready')
+    );
 }

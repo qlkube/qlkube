@@ -1,6 +1,6 @@
 const {GraphQLString, GraphQLSchema, GraphQLObjectType, GraphQLBoolean} = require('graphql');
 const {mergeSchemas} = require('graphql-tools');
-const {createGraphQlSchema} = require('oasgraph');
+const {createGraphQLSchema} = require('openapi-to-graphql');
 
 exports.createSchema = async (oas, kubeApiUrl, token) => {
     let baseSchema = await oasToGraphQlSchema(oas, kubeApiUrl, token)
@@ -8,15 +8,26 @@ exports.createSchema = async (oas, kubeApiUrl, token) => {
 };
 
 async function oasToGraphQlSchema(oas, kubeApiUrl, token) {
-    const {schema} = await createGraphQlSchema(oas, {
-        baseUrl: kubeApiUrl,
-        viewer: false,
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-    });
-    return schema
+    if (token) {
+        const {schema} = await createGraphQLSchema(oas, {
+            baseUrl: kubeApiUrl,
+            viewer: false,
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        });
+        return schema;
+    }
+    else {
+        console.log("Using auth scope");
+        const {schema} = await createGraphQLSchema(oas, {
+            baseUrl: kubeApiUrl,
+            viewer: false,
+            tokenJSONpath: "$.headers.authorization"
+        });
+        return schema;
+    }
 }
 
 // adds an 'all' type to the schema

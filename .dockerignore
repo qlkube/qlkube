@@ -1,0 +1,10 @@
+.git
+.gitignore
+.dockerignore
+*.yml
+*.md
+Dockerfile
+docker-compose*.yml
+*.sqlite
+*.env*
+LICENSE

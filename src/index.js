@@ -43,5 +43,5 @@ async function main() {
         // fallback to standard filter function
         return compression.filter(req, res)
     }
-    app.listen(49020)
+    app.listen(process.env.LISTEN_PORT || 49020)
 }

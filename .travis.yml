@@ -1,22 +1,21 @@
-sudo: required
+dist: xenial
+env:
+  - DOCKER_REPO=puzlcloud
+
 language: generic
+
+addons:
+  apt:
+    packages:
+    - jq
 
 services:
   - docker
 
-install:
-  - curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-  - chmod +x skaffold
-  - sudo mv skaffold /usr/local/bin
-
 before_script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-# if commit is tagged, then tag docker image with the tag & push image (otherwise tag with commit id & no push)
 script:
-  - |
-    if [ "${TRAVIS_TAG}" = "" ]; then
-      skaffold build --profile travis-ci
-    else
-      skaffold build --profile travis-release
-    fi
+  - VERSION=$(jq -r .version ./package.json)
+  - docker build -t ${DOCKER_REPO}/${TRAVIS_REPO_SLUG/*\/}:${VERSION}-${TRAVIS_BRANCH} .
+  - docker push ${DOCKER_REPO}/${TRAVIS_REPO_SLUG/*\/}:${VERSION}-${TRAVIS_BRANCH}

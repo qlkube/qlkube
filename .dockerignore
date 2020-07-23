@@ -8,3 +8,4 @@ docker-compose*.yml
 *.sqlite
 *.env*
 LICENSE
+node_modules

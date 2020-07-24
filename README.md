@@ -359,7 +359,9 @@ with the kubernetes api.
 
 `KUBE_SCHEMA_TOKEN` - `string`, a token from account, which will be used to request OpenAPI schema of Kubernetes cluster, use with `IN_CLUSTER=false`
 
-`USE_JWT_AUTH` - `bool`, set to `false` if you do not want to proxify client `Authorization` header to Kubernetes and want to use `KUBE_SCHEMA_TOKEN` for all user requests
+`USE_JWT_AUTH` - `bool`, set to `false` if you do not want to proxify client `Authorization` header to Kubernetes
+
+> **Notice:** In case of `USE_JWT_AUTH=false` default token (or `KUBE_SCHEMA_TOKEN`) will be used for all user requests, which can be unsecure.
 
 ## Schema
 

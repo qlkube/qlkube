@@ -349,6 +349,18 @@ npm run local
 Navigate to http://localhost:8080/ in your browser - this will launch the GraphQL Playground which you can use to interact
 with the kubernetes api.
 
+### Environment variables (settings)
+
+`NODE_ENV` - `string`, set to `production` to mute stacktrace proxying to a client, see more [here](https://expressjs.com/en/advanced/best-practice-performance.html#set-node_env-to-production)
+
+`IN_CLUSTER`- `bool`, set to `false` if you run outside of Kubernetes cluster
+
+`KUBERNETES_HOST` - `string`, path to Kubernetes cluster API, use with `IN_CLUSTER=false`
+
+`KUBE_SCHEMA_TOKEN` - `string`, a token from account, which will be used to request OpenAPI schema of Kubernetes cluster, use with `IN_CLUSTER=false`
+
+`USE_JWT_AUTH` - `bool`, set to `false` if you do not want to proxify client `Authorization` header to Kubernetes and want to use `KUBE_SCHEMA_TOKEN` for all user requests
+
 ## Schema
 
 The generated graphql schema is served at /schema

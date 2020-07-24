@@ -10,6 +10,8 @@ const logger = require('pino')({useLevelLabels: true});
 main().catch(e => logger.error({error: e.stack}, "failed to start qlkube server"));
 
 async function main() {
+    var environment = process.env.NODE_ENV;
+
     const inCluster = process.env.IN_CLUSTER !== 'false';
     logger.info({inCluster}, "cluster mode configured");
     const kubeApiUrl = inCluster ? 'https://kubernetes.default.svc' : process.env.KUBERNETES_HOST;
@@ -30,7 +32,7 @@ async function main() {
                 if(req.headers.authorization.length > 0) {
                     const strs = req.headers.authorization.split(' ');
                     var user = {};
-                    user.token = strs[1];
+                    user.token = strs[0];
                     return user;
                 }
             }

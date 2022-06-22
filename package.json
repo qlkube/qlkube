@@ -23,7 +23,7 @@
     "apollo-server-express": "^2.9.7",
     "compression": "^1.7.4",
     "express": "^4.17.1",
-    "got": "^9.6.0",
+    "got": "^11.8.5",
     "graphql": "^14.5.8",
     "graphql-tools": "^4.0.6",
     "oasgraph": "^0.14.3",

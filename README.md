@@ -1,3 +1,9 @@
+> ⚠️
+>
+>  PLEASE NOTE: this project is no longer actively maintained. It is recommended to use the fork at https://github.com/tmobile/qlkube where active development has been transferred to. 
+>
+> ⚠️
+
 # qlkube
 
 qlkube is a graphql api for kubernetes, allowing you to interact with all the features of the Kubernetes api using graphql.

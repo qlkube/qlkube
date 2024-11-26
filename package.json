@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/qlkube/qlkube#readme",
   "dependencies": {
-    "apollo-server-express": "^2.9.7",
+    "apollo-server-express": "^2.14.2",
     "compression": "^1.7.4",
     "express": "^4.17.1",
     "got": "^9.6.0",
